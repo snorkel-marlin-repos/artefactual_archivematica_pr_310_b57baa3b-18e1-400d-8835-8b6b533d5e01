@@ -1,0 +1,50 @@
+{% extends "layout_fluid.html" %}
+{% load breadcrumb %}
+
+{% block title %}Administration{% endblock %}
+{% block h1 %}Administration{% endblock %}
+{% block page_id %}Administration{% endblock %}
+
+{% block extra_css %}
+  <style type="text/css">
+
+    td.option {
+      white-space: nowrap;
+    }
+
+  </style>
+{% endblock %}
+
+{% block content %}
+
+  <div class="row">
+
+    {% include "administration/sidebar.html" %}
+
+    <div class="span12">
+
+      {% url 'components.administration.views.atom_levels_of_description' as url_atom_levels_of_description %}
+
+      <div style="float: right">
+        <a href="{{ url_atom_levels_of_description }}" class="btn">Levels of Description</a>
+      </div>
+
+      <form class="form-stacked" method="post" action="{% url 'components.administration.views.atom_dips' %}">
+
+        <h3>AtoM DIP upload</h3>
+
+        <p>The settings below configure DIP uploading to Atom.</p>
+
+        {% include "_form.html" %}
+
+        <div class="actions">
+          <input type="submit" value="Save" class="btn primary" />
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+{% endblock %}

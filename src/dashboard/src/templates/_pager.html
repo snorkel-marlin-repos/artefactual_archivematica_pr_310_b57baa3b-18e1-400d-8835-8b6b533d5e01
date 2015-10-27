@@ -1,0 +1,60 @@
+<div style='height: 50px; line-height: 50px;'>
+  <div style='float:right;'>
+    {% if page.has_previous %}
+      <span style='margin-right: 2em'>
+        {% ifnotequal page.previous_page_number 1 %}
+          <span style='margin-right: 1em'>
+            <a href='?{{ search_params }}&page=1'>First</a>
+          </span>
+        {% endifnotequal %}
+
+        <a href='?{{ search_params }}&page={{ page.previous_page_number }}'>Previous</a>
+      </span>
+
+      {% if page.previous_pages %}
+        {% for page_number in page.previous_pages %}
+          <a href='?{{ search_params }}&page={{ page_number }}'>{{ page_number }}</a>
+        {% endfor %}
+      {% endif %}
+    {% endif %}
+
+    {% if page.paginator.num_pages > 1 %}
+      <strong>{{ page.number }}</strong>
+    {% endif %}
+
+    {% if page.has_next %}
+      {% if page.next_pages %}
+        {% for page_number in page.next_pages %}
+          <a href='?{{ search_params }}&page={{ page_number }}'>{{ page_number }}</a>
+        {% endfor %}
+      {% endif %}
+
+      <span style='margin-left: 2em'>
+        <a href='?{{ search_params }}&page={{ page.next_page_number }}'>Next</a>
+
+        {% ifnotequal page.next_page_number page.paginator.num_pages %}
+          <span style='margin-left: 1em'>
+            <a href='?{{ search_params }}&page={{ page.paginator.num_pages }}' title='Page {{ page.paginator.num_pages }}'>Last</a>
+          </span>
+        {% endifnotequal %}
+      </span>
+    {% endif %}
+
+    {% if page.paginator.num_pages > 1 %}
+    <script>
+    $(document).ready(function () {
+      $('#paging_jump_to').change(function() {
+        window.location = '?{{ search_params }}&page=' + $(this).val();
+      });
+    });
+    </script>
+      <span style='margin-left: 2em'>
+        Jump to &nbsp;<input id='paging_jump_to' style='width: 20px;' />
+      </span>
+    {% endif %}
+  </div>
+
+  <p>
+    Found {{ page.paginator.count }} entries. Showing {{ page.start_index }} to {{ page.end_index }}.
+  </p>
+</div>

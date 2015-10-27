@@ -1,0 +1,59 @@
+{% extends "layout_fluid.html" %}
+{% load l10n %}
+
+{% block content %}
+<a name='tasks_top'></a>
+
+{% include "main/_tasks_pager.html" %}
+
+  <table>
+    <tbody>
+      {% for item in objects %}
+        <tr class="{% cycle 'odd' 'even' %}{% ifnotequal item.exitcode 0 %} exiterror{% endifnotequal %}">
+          <td>
+            <span>Task UUID:</span> {{ item.taskuuid }}<br />
+            <span>File UUID:</span> {{ item.fileuuid }}<br />
+            <span>File name:</span> {{ item.filename }}<br />
+            <span>Client:</span> {{ item.client }}<br />
+            <span>&nbsp;</span> {{ item.exec_field }} (exit code: {{ item.exitcode }})
+          </td>
+          <td>
+            <span>Start time:</span> <span class='datetime'>{{ item.starttime.isoformat }}</span><br />
+            <span>End time:</span> <span class='datetime'>{{ item.endtime.isoformat }}</span><br />
+            <span>Created time:</span> <span class='datetime'>{{ item.createdtime.isoformat }}</span><br />
+            <span>Duration:</span> {{ item.duration }} second(s)
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">Command: {{ item.execution }} {{ item.arguments }}</td>
+        </tr>
+        {% if item.stdout %}
+          <tr>
+            <td colspan="2" class="stdout">
+              <p>STDOUT</p>
+              <pre>{{ item.stdout }}</pre>
+            </td>
+          </tr>
+        {% endif %}
+        {% if item.stderror %}
+          <tr>
+            <td colspan="2" class="stderror">
+              <p>STDERR</p>
+              <pre>{{ item.stderror }}</pre>
+            </td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% include "main/_tasks_pager.html" %}
+
+
+  <script>
+  $(document).ready(function() {
+    localizeTimestampElements();
+  });
+  </script>
+
+{% endblock %}

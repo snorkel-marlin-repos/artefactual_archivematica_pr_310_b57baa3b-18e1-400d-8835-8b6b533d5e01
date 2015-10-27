@@ -1,0 +1,15 @@
+*.py[co]
+src/dashboard/src/settings_local.py
+qubit-git
+*.pyo
+*~
+localDevSetup/ETCsudoersBackup
+*.directory
+*.sublime-project
+*.sublime-workspace
+mysql_dev.complete
+
+#eclipse IDE files
+.project
+.pydevproject
+.settings/

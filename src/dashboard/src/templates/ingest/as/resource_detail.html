@@ -1,0 +1,60 @@
+﻿{% extends "layout_fluid.html" %}
+{% load breadcrumb %}
+
+{% block title %}Match{% endblock %}
+{% block h1 %}Match{% endblock %}
+{% block page_id %}atk_match{% endblock %}
+
+{% block content %}
+<div class="span12">
+
+  <ul class="breadcrumb">
+    {% breadcrumb_url 'DIP Upload' 'components.ingest.views_as.ingest_upload_as' uuid %}
+    {% breadcrumb 'Collection' %}
+  </ul>
+
+  <div style="float:right">
+    {% include "ingest/as/_search_form.html" %}
+  </div>
+
+  <h1>Collection<br />
+    <small>{{ resource_data.title }} ({{ resource_data.id }})</small>
+  </h1>
+
+  {% if reset_url %}
+    <div id='reset_matching'><a class="btn" href="{% url reset_url uuid %}">Restart matching</a>
+  {% else %}
+    <div id='reset_matching'><a class="btn disabled">Restart matching</a>
+  {% endif %}
+  <a class='btn' href="{% url 'components.ingest.views_as.ingest_upload_as_match_dip_objects_to_resource_levels' uuid resource_id %}">Assign DIP objects to this resource</a>
+  <a class="btn" href="{% url 'components.ingest.views_as.ingest_upload_as_review_matches' uuid %}">Review matches</a>
+  <br />
+  <br />
+
+  {% if page.objects %}
+    <table>
+      <thead>
+        <tr>
+          <th>Level of Description</th>
+          <th><a href="?sort={{ sort_direction }}&amp;page=1">Title</a></th>
+          <th>Dates</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for component in page.objects %}
+          <tr>
+            <td><a href="{% url 'components.ingest.views_as.ingest_upload_as_resource_component' uuid component.id %}">{{ component.levelOfDescription }}</a></td>
+            <td><a href="{% url 'components.ingest.views_as.ingest_upload_as_resource_component' uuid component.id %}">{{ component.title }} {% if component.identifier %} ({{ component.identifier }}) {% endif %}</a></td>
+            <td><a href="{% url 'components.ingest.views_as.ingest_upload_as_resource_component' uuid component.id %}">{{ component.dates }}</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% include "_pager.html" %}
+  {% else %}
+    <p>No child descriptions found.</p>
+  {% endif %}
+
+</div>
+{% endblock %}
