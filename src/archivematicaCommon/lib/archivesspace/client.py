@@ -57,7 +57,7 @@ class ArchivesSpaceClient(object):
     def _login(self):
         try:
             response = requests.post(self.host + '/users/' + self.user + '/login',
-                                     data={'password': self.passwd})
+                                     data={'password': self.passwd, 'expiring': False})
         except requests.ConnectionError as e:
             raise ConnectionError("Unable to connect to ArchivesSpace server: " + str(e))
 
@@ -74,7 +74,7 @@ class ArchivesSpaceClient(object):
         self.session = requests.Session()
         self.session.headers.update({'X-ArchivesSpace-Session': token})
 
-    def _request(self, method, url, params, expected_response, data=None, retry=True):
+    def _request(self, method, url, params, expected_response, data=None):
         if not url.startswith('/'):
             url = '/' + url
 
@@ -82,10 +82,6 @@ class ArchivesSpaceClient(object):
         if response.status_code != expected_response:
             LOGGER.error('Response code: %s', response.status_code)
             LOGGER.error('Response body: %s', response.text)
-            # session has expired; acquire a new session, then retry once
-            if retry and response.status_code == 412 and "SESSION_GONE" in response.text:
-                self._login()
-                return self._request(method, url, params, expected_response, data=data, retry=False)
             raise CommunicationError(response.status_code, response)
 
         try:
@@ -428,11 +424,7 @@ class ArchivesSpaceClient(object):
             dates = self._fetch_dates_from_record(record)
             identifier = record['id_0'] if 'id_0' in record else record.get('component_id', '')
 
-            params = {
-                'page': 1,
-                'q': 'resource:{}'.format(record['uri'])
-            }
-            has_children = self._get(self.repository + '/search', params=params).json()['total_hits'] > 0
+            has_children = len(self._get(record['uri'] + '/tree', params={'page': 1}).json()['children']) > 0
 
             return {
                 'id': record['uri'],
@@ -484,7 +476,8 @@ class ArchivesSpaceClient(object):
         params = {
             'page': page,
             'page_size': page_size,
-            'q': 'identifier:{}'.format(accession)
+            'q': 'identifier:{}'.format(accession),
+            'type[]': 'accession',
         }
         response = self._get(self.repository + '/search', params=params)
         hits = response.json()
